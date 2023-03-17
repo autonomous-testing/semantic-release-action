@@ -1,0 +1,21 @@
+name: Semantic release
+description: Run semantic-release.
+
+inputs:
+  GH_TOKEN:
+    description: "GH_TOKEN with write for package and repo."
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Npm clean install
+      uses: wintero92/npm-install-action@v1
+
+    - name: Semantic release
+      shell: bash
+      env:
+        GH_TOKEN: ${{inputs.GH_TOKEN}}
+        NPM_TOKEN: ${{inputs.GH_TOKEN}}
+      run: npx semantic-release
