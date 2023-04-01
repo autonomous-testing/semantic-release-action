@@ -3,8 +3,17 @@ description: Run semantic-release.
 
 inputs:
   GH_TOKEN:
-    description: "GH_TOKEN with write for package and repo."
+    description: "GITHUB_TOKEN with write for packages and repository."
     required: true
+
+outputs:
+  NEW_RELEASE:
+    description: "Equal to true if there is new release, false if not."
+    value: ${{ steps.new_release.outputs.NEW_RELEASE }}
+
+  NEW_VERSION:
+    description: "New release version."
+    value: ${{ steps.release_version.outputs.NEW_VERSION }}
 
 runs:
   using: "composite"
@@ -12,6 +21,30 @@ runs:
   steps:
     - name: Npm clean install
       uses: wintero92/npm-install-action@v1
+
+    - name: Check if there is new release
+      id: new_release
+      shell: bash
+      env:
+        GH_TOKEN: ${{inputs.GH_TOKEN}}
+        NPM_TOKEN: ${{inputs.GH_TOKEN}}
+      run: |
+        raw_new_release=$(npx semantic-release --dry-run --verify-release | grep "Published release" | wc -l || echo 0)
+        [[ "${raw_new_release}" == "1" ]] && new_release=true || new_release=false
+        echo "NEW_RELEASE=${new_release}" >> $GITHUB_OUTPUT
+        echo "NEW_RELEASE=${new_release}"
+
+    - name: Release version
+      id: release_version
+      shell: bash
+      env:
+        GH_TOKEN: ${{inputs.GH_TOKEN}}
+        NPM_TOKEN: ${{inputs.GH_TOKEN}}
+      run: |
+        raw_release_info=$(npx semantic-release --dry-run --verify-release | grep "Published release" || echo no_release)
+        new_version=$(echo $raw_release_info | sed -nE 's/.*Published release ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
+        echo "NEW_VERSION=${new_version}" >> $GITHUB_OUTPUT
+        echo "NEW_VERSION=${new_version}"
 
     - name: Semantic release
       shell: bash
