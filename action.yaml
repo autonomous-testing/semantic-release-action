@@ -6,6 +6,11 @@ inputs:
     description: "GITHUB_TOKEN with write for packages and repository."
     required: true
 
+  NODEJS_VERSION:
+    description: "Nodejs version."
+    required: false
+    default: "18"
+
 outputs:
   NEW_RELEASE:
     description: "Equal to true if there is new release, false if not."
@@ -21,6 +26,8 @@ runs:
   steps:
     - name: Npm clean install
       uses: wintero92/npm-install-action@v1
+      with:
+        nodejs-version: ${{inputs.NODEJS_VERSION}}
 
     - name: Check if there is new release
       id: new_release
