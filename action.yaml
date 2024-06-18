@@ -9,7 +9,7 @@ inputs:
   NODEJS_VERSION:
     description: "Nodejs version."
     required: false
-    default: "18"
+    default: "20"
 
 outputs:
   NEW_RELEASE:
@@ -25,7 +25,7 @@ runs:
 
   steps:
     - name: Npm clean install
-      uses: wintero92/npm-install-action@v1
+      uses: autonomous-testing/npm-install-action@v2
       with:
         nodejs-version: ${{inputs.NODEJS_VERSION}}
 
