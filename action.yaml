@@ -24,10 +24,8 @@ runs:
   using: "composite"
 
   steps:
-    - name: Npm clean install
-      uses: autonomous-testing/npm-install-action@v2
-      with:
-        nodejs-version: ${{inputs.NODEJS_VERSION}}
+    - name: Restore cache
+      uses: autonomous-testing/npm-install-action@v2.3.1
 
     - name: Check if there is new release
       id: new_release
